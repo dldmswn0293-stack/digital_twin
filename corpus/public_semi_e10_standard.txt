@@ -1,0 +1,28 @@
+[문서 유형: 공개 산업표준 - SEMI E10 설비 신뢰성/가동률 표준]
+
+출처: SEMI (반도체장비재료산업협회), "SEMI E10: Specification for Definition and Measurement
+of Equipment Reliability, Availability, and Maintainability (RAM) and Utilization" (1986년
+최초 제정, 이후 지속 개정)
+
+표준 개요
+SEMI E10은 반도체 제조 설비의 신뢰성(Reliability), 가용성(Availability), 유지보수성
+(Maintainability)을 측정하는 공통 방법론을 정의한 산업 표준이다. 설비 공급사와
+사용자(팹) 간에 설비 성능을 같은 기준으로 소통할 수 있게 하는 것이 목적이며,
+반도체 업계에서 가장 널리 쓰이는 SEMI 표준 중 하나로 꼽힌다.
+
+핵심 개념
+SEMI E10은 설비 상태를 크게 6가지 기본 상태(Nonscheduled Time, Standby, Production,
+Maintenance, Engineering, Scheduled/Unscheduled Downtime)로 정의한다. 이 상태들을
+기반으로 MTBF(Mean Time Between Failures, 평균 고장 간격), 가동률(Utilization) 등의
+핵심 지표를 계산할 수 있다. 최신 개정판(E10-0422)에서는 여러 공정 모듈이 결합된
+Multi-Path Cluster Tool(MPCT)처럼 복잡한 설비 구성에 대해서도 모듈 단위 성능을
+먼저 평가한 뒤 이를 집계하는 방식의 세부 지침을 제공한다.
+
+예지보전과의 연관성
+SEMI E10 표준 문서는 최근 개정 논의에서 예측적(predictive)·처방적(prescriptive)
+정비 개념을 다루는 용어 체계를 도입할 계획이 있음을 밝히고 있다. 이는 전통적인
+사후정비·예방정비 중심의 RAM 측정 체계가, 본 프로젝트가 다루는 것과 같은
+데이터 기반 상태감시형 예지보전(condition-based predictive maintenance)으로
+확장되는 산업 전반의 흐름을 보여준다. 계획되지 않은 설비 정지(Unscheduled
+Downtime)를 계획된 정비(Scheduled Downtime)로 전환하는 것이 예지보전의 핵심
+목표이며, 이는 SEMI E10이 정의하는 설비 상태 분류 체계와 직접 맞닿아 있다.

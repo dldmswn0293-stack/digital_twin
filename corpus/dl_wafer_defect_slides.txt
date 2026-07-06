@@ -1,0 +1,227 @@
+[문서 유형: 자체 DL 발표자료]
+
+SEMICONDUCTOR AI PROJECT
+
+AI 기반 반도체 웨이퍼
+결함 패턴 분류 모델
+개발 및 시각화
+반도체 양산 공정 효율화를 위한 CNN 기반
+웨이퍼맵 결함 패턴 자동 분류 프로젝트
+
+이은주
+2026.07.01
+
+CONTENTS
+
+목차 — 모델링 파이프라인 순서
+
+ 프로젝트 개요 · 문제 정의 데이터셋 · 결함 패턴
+ 01 Why Automated Classification
+ 02 WM-811K Wafer Map
+
+ 데이터 전처리 · EDA CNN 모델 설계
+ 03 Imbalance · Resize · Encoding
+ 04 Conv2D Architecture
+
+ 학습 · 실험 관리 성능 평가
+ 05 Focal Loss · EarlyStopping · MLflow
+ 06 Accuracy · Macro-F1 · Recall
+
+ 결과 시각화 · 배포 결론 · 활용 방안
+ 07 Streamlit App
+ 08 Smart Manufacturing
+
+01 PROBLEM
+
+문제 정의 및 자동 분류의 필요성
+ 기존 방식의 한계
+
+ 긴 판독 시간
+
+ 웨이퍼 수량 증가에 따라 육안 검토 시간이 선형적으로 증가
+
+ 주관적 판단 기준 CNN 기반 웨이퍼맵 자동 분류
+ 담당 엔지니어 경험·숙련도에 따라 분류 결과가 달라질 수 있음
+ → 공간 패턴의 일관된 기계적 학습 및 분류
+ → 엔지니어 판독 의존도 감소 · 업무 집중도 향상
+
+ 조기 감지 지연 → 공정 이상 조기 신호 포착으로 수율 보호
+
+ 이상 패턴 인지가 늦어지면 수율 손실·품질 이슈가 확대
+ 8가지 결함 패턴 자동 인식
+
+ 02 DATASET
+
+ 웨이퍼맵 결함 패턴 개요
+WM-811K — 실제 FAB 웨이퍼맵 · 8가지 주요 결함 클래스 (공간 패턴 = 공정 이상 신호)
+
+ Center Donut Edge-Ring Edge-Loc
+ 중앙 공정 조건 / 온도 균일도 반경 방향 공정 균일도 엣지 공정 조건 / 핸들링 국부 장비 접촉 / 포지셔닝
+
+ Scratch Loc Near-full Random
+ 물리적 스크래치 / 이송 접촉 파티클 / 국부 공정 편차 전역 공정 실패 / 레시피 오류 확률적 노이즈성 불량
+
+ 03 PREPROCESSING
+
+데이터 전처리 및 EDA
+클래스별 샘플 웨이퍼맵 시각화
+
+03 PREPROCESSING
+
+데이터 전처리 및 EDA
+
+핵심 이슈 — 클래스 불균형 대응 전략
+
+정상(none) 약 86% 라벨 미검토(unlabeled) 행 제외 — '정상'과 구분
+
+결함 8종 합계 약 14% CAP_NONE — 정상 클래스 20000으로 상한, 결함은 전부 유지
+
+→ 정확도(accuracy)만으로는 성능 왜곡 Focal Loss로 불균형 보정 (학습 단계) — GAMMA 값 2.0 -> 3.0
+
+03 PREPROCESSING
+
+데이터 전처리 및 EDA
+
+ 전처리 파이프라인
+
+ 웨이퍼맵 리사이즈
+ 1
+ 가변 크기 → 128×128 (최근접 보간, 0/1/2 값 보존)
+
+ 정규화
+ 2
+ Rescaling(1/2) — 0/1/2 값을 0~1 범위로
+
+ 라벨 인코딩
+ 3
+ LabelEncoder → one-hot (Focal Loss용)
+
+ 학습/테스트 분리
+ 4
+ train_test_split · stratify로 클래스 비율 유지
+
+04 MODEL
+
+CNN 모델 설계
+
+ Input
+ Conv2D 16 Conv2D 32 Conv2D 64 Conv2D 128 Dense 128 Softmax
+128×128×1
+
+ +MaxPool +MaxPool +MaxPool +MaxPool
+
+Focal Loss (γ = 3.0) Optimizer Adam
+
+ Activation ReLU / Softmax
+맞히기 쉬운 다수 클래스(none)의 손실을 깎아
+드문 결함 패턴 학습에 집중 → 불균형 보정의 핵심 과적합 방지 Data Augmentation · Dropout 0.3
+ 128×128 (Loc/Edge-Loc 구분 강화,
+ 해상도
+ Edge-Loc/Edge-Ring 구분 강화)
+
+05 TRAINING
+
+학습 및 실험 관리
+
+ 학습 전략 MLflow 실험 추적
+ 5
+ 설정·기법을 바꿀 때마다 자동 기록 → 실험 비교
+ Focal Loss
+ 1 Parameters img_size · focal_gamma · cap_none · batch
+ 다수 클래스 억제, 드문 결함에 집중
+ Metrics test_accuracy · macro_f1 / precision · 클래스별 recall
+ Artifacts 혼동행렬 이미지 · 분류 리포트
+ EarlyStopping
+ 2 Model 학습 모델 버전 자동 저장
+ val_loss 5회 미개선 시 중단, 최적 가중치 복원
+
+ Class 유지
+ 3
+ 결함 8종 전부 사용 (데이터 안 버림)
+
+ Batch / Epoch
+ 4
+ 32 / 최대 30 (상한, 자동 조기 종료)
+
+05 TRAINING
+
+실험 비교 — 클래스 불균형 튜닝
+
+ 핵심 인사이트
+
+ → none(정상)을 줄일수록 결함 recall은 계속 상승
+ → 그러나 10,000 미만에선 정상 오판(false alarm)이 늘어
+ Macro-F1 하락
+ → recall 단일 지표가 아닌 Macro-F1/Macro-Precision
+ 기준으로 최적점 탐색
+ → cap=10,000을 최종 채택 (변곡점)
+
+ CAP_NONE 값에 따른 Macro-F1 변화 (MLflow 4개 run 비교)
+ 불균형을 정량적으로 튜닝 → 올바른 지표로 판단
+
+05 TRAINING
+
+실험 비교 — Confusion Matrix 전/후
+
+06 EVALUATION
+
+성능 평가 — Best Run (cap_none=10,000)
+ Test Accuracy Macro-F1 Macro-Precision
+
+ 92.4% 0.90 0.90
+ (참고 지표) 핵심 지표 · 클래스 공평 오판(false alarm) 균형
+
+ 결과 해석
+
+ 정확도(92.4%)는 참고용 — 정상 비중 보정 후에도 Macro-F1 0.90 달성
+ → Scratch·Edge-Loc의 정상(none) 누락 대폭 감소 — 불량 놓침 최소화
+ → Recall·Precision 균형(0.90/0.90)으로 false alarm도 억제
+ → 한계: Loc(recall 0.79)가 최저 — 국부 불량의 패턴 다양성 때문, 추가
+ 데이터·고해상도로 개선 여지
+
+06 EVALUATION
+
+성능 평가 — Training vs Validation
+
+ 결과 해석
+
+06 EVALUATION
+
+Grad-CAM — 결함 판단 근거 시각화 (XAI)
+
+ 따뜻한 색(노랑, 빨강)이 진할수록 예측 기여가 큰 영역 — Scratch의 긁힌 선·Random의 분산 영역에 정확히 집중
+
+07 DEPLOY
+
+결과 시각화 및 배포 — Streamlit
+
+08 IMPACT
+
+결론 및 제조 현장 활용 방안
+
+ 1 Smart Manufacturing 구현 2 IT × OT 융합
+
+ 공정 데이터(웨이퍼맵)에 AI/ML 적용한 양산 효율화 사례 공정·장비 도메인 지식 + 딥러닝 결합, 패턴→공정원인 해석
+
+ 3 Work With AI 4 Digital Twin 확장
+
+ 육안 검사 자동화로 반복 업무 제거·판단 지원 FDC·MES 연계 실시간 이상탐지, 가상 검증으로 발전
+
+09 Q&A
+
+Trouble Shooting
+
+ 원인 : RandomZoom 사용시 웨이퍼의 가장자리가 잘리는 이슈
+ 1 : RandomRotation(0.1),
+ 해결 Data Augmentation RandomFlip만 사용 2 낮은 Recall Value
+
+ 원인 : RandomZoom 사용시 웨이퍼의 가장자리가 잘리는 이슈 원인 : Loc의 recall 0.79 - 국부 불량의 패턴 다양성 때문
+ 해결 : RandomRotation(0.1), RandomFlip만 사용 한계 : 추가 데이터와 고해상도로 개선 여지
+
+THANK YOU
+
+감사합니다
+AI 기반 반도체 웨이퍼 결함 패턴 분류 · Smart Manufacturing
+
+CNN · Conv2D · MaxPooling · Dropout · Dense · Focal Loss
+2026 · Smart Manufacturing · MLflow

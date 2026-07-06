@@ -1,0 +1,27 @@
+[문서 유형: 공개 학술자료 - WM-811K 웨이퍼맵 데이터셋]
+
+출처: Wu, M.-J., Jang, J.-S. R., Chen, J.-L. (2015). "Wafer Map Failure Pattern Recognition and
+Similarity Ranking for Large-Scale Data Sets." IEEE Transactions on Semiconductor Manufacturing,
+28(1), 1-12. (대만 국립정치대 MIR Lab, TSMC 실제 FAB 데이터 기반)
+
+데이터셋 개요
+WM-811K(LSWMD, Large-Scale Wafer Map Dataset)는 811,457장의 실제 FAB 웨이퍼맵으로 구성된
+공개 데이터셋이다. 이 중 약 20%만 도메인 전문가에 의해 결함 패턴이 라벨링되어 있으며,
+나머지는 미라벨(unlabeled) 상태다. 라벨링된 웨이퍼맵은 Center, Donut, Edge-Loc, Edge-Ring,
+Loc, Random, Scratch, Near-full, none(정상) 총 9개 클래스로 분류된다.
+각 웨이퍼는 lot(로트) 단위로 묶여 있으며, 하나의 로트는 보통 25장의 웨이퍼로 구성된다.
+웨이퍼맵의 크기(die 배열)는 웨이퍼마다 제각각이라 고정 크기로 표준화하는 전처리가 필요하다.
+
+원 논문의 핵심 기여
+원 논문은 원본 웨이퍼맵 픽셀을 그대로 사용하지 않고, 회전·크기 변화에 강인한(rotation-
+and scale-invariant) 특징을 추출해 웨이퍼맵을 축약된 형태로 표현하는 방법을 제안했다.
+이 방법은 대규모 데이터셋 처리 시 발생하는 연산 부담을 줄이면서도 분류 정확도와
+강인성을 함께 개선했다고 보고되었다. 논문은 이 방법을 TSMC의 실제 웨이퍼 데이터로
+검증했으며, 811,457장 규모에서도 Top-100 유사 웨이퍼맵 검색을 수 초 내에 수행할 수
+있음을 보였다.
+
+산업적 의의
+WM-811K는 결함 없음(none) 클래스가 압도적 다수를 차지하는 극심한 클래스 불균형이
+대표적 특징으로, 이후 발표된 다수의 후속 연구(CNN, 오토인코더, 앙상블 기법 등)에서
+공통적으로 지적되는 도전 과제다. 이 데이터셋은 현재까지도 웨이퍼 결함 패턴 인식
+분야의 사실상 표준 벤치마크로 활용되고 있으며, Kaggle 등에서도 공개되어 있다.

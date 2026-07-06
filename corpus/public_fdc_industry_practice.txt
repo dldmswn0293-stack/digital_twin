@@ -1,0 +1,39 @@
+[문서 유형: 공개 산업 백서/연구 - FDC(Fault Detection and Classification) 실무]
+
+출처1: PDF Solutions (Cimetrix), "EDA Applications and Benefits for Smart Manufacturing
+Episode 4: Precision Fault Detection and Classification (FDC)" (업계 백서)
+출처2: IEEE Xplore 게재 논문 "Machine Learning-Based Process-Level Fault Detection and
+Part-Level Fault Classification in Semiconductor Etch Equipment",
+"Data-Driven Approach for Fault Detection and Diagnostic in Semiconductor Manufacturing"
+
+FDC가 해결하는 문제
+FDC 시스템의 목적은 설비가 정상 운영 범위를 벗어난 상태(drift)로 자재를 처리해
+스크랩(불량)이 발생하는 것을 막는 것이다. 업계 백서에 따르면, 대표적인 FDC 기법은
+정상/비정상 런(run) 데이터를 학습셋으로 삼아 저차원 통계적 결함 모델을 구성하고,
+공정 중 실시간으로 수집되는 트레이스 데이터를 이 모델에 대입해 공정 이탈이나
+설비 고장 징후를 탐지하는 방식이다. 가장 정교한 팹에서는 FDC 소프트웨어가
+공정 흐름 관리 시스템과 긴밀히 연동되어, 공정 도중에도 설비 동작에 개입해
+스크랩 발생을 줄일 수 있다.
+
+기술적 난제
+이런 알고리즘의 난제는 모든 결함 원인을 놓치지 않을 만큼 타이트하면서도,
+동시에 거짓 알람(false alarm)을 최소화할 만큼 여유를 두는 균형점을 찾는 것이다.
+현대 FDC 시스템의 핵심은 대량의 시계열 데이터를 다룰 수 있는 다변량 통계 분석
+도구이며, 수백 개에 달하는 설비 파라미터를 소수의 주성분(principal component)으로
+압축해 실시간 설비 상태 모니터링에 활용한다.
+
+최근 연구 동향
+최근 IEEE에 게재된 연구들은 FDC를 공정 단위 이상탐지(Fault Detection)와 설비
+부품 단위 이상분류(Fault Classification)로 단계를 나누어 접근하는 방식을 제안하고
+있다. 예를 들어 원클래스 SVM(OC-SVM)으로 공정 이상 여부를 먼저 탐지한 뒤,
+XGBoost 등으로 변수 중요도를 분석해 어떤 설비 부품이 원인인지 분류하는 2단계
+파이프라인이 대표적이다. 이러한 흐름은 본 프로젝트의 "RAG로 배경지식 검색 →
+ML/DL Tool로 구체적 판정 → LLM이 종합 설명 생성"하는 Agent 구조와 유사한
+문제 분해 철학을 공유한다.
+
+경제적 의미
+업계 백서는 300mm 팹 기준으로 FDC 거짓 알람 1건이 설비 가동 정지, 기술자 시간,
+품질 확인용 웨이퍼 소모를 합쳐 약 1만 2천 달러의 비용을 유발할 수 있다고
+추산하며, 설비 2000대 규모 팹에서 거짓 알람률을 절반으로 줄이면 연간 약
+2500만 달러의 비용 절감 효과가 있다고 제시한다. 이는 FDC 모델의 정밀도가
+단순 기술적 지표를 넘어 실질적인 경영 성과와 직결됨을 보여준다.
