@@ -17,7 +17,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 LLM_BACKEND = os.getenv("LLM_BACKEND", "api")
 
 # API 백엔드 설정
-API_MODEL_NAME = os.getenv("API_MODEL_NAME", "claude-haiku-4-5")
+API_MODEL_NAME = os.getenv("API_MODEL_NAME", "claude-sonnet-4-6")
 
 # 로컬 sLLM 백엔드 설정 (Ollama)
 LOCAL_MODEL_NAME = os.getenv("LOCAL_MODEL_NAME", "qwen2.5:7b-instruct")

@@ -206,3 +206,8 @@ if __name__ == "__main__":
 
     print("=== 그래프 구조 ===")
     print(app.get_graph().draw_ascii())
+    
+    print("\n=== 실제 실행 테스트 (LangSmith 트레이싱) ===")
+    result = app.invoke({"question": "GroupKFold를 왜 썼는지 설명해줘"})
+    print("라우팅 경로:", result.get("route"))
+    print("답변:", result.get("answer")[:300])
